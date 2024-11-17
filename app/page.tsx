@@ -294,7 +294,7 @@ Remember:
             <div className="relative w-full aspect-video mb-4">
               {!startWebRTC && (
                 <Image
-                  src="/logo.png"
+                  src="/public/logo.png"
                   alt="Start conversation"
                   fill
                   className="object-cover rounded"
