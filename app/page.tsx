@@ -341,7 +341,7 @@ Remember:
                 onClick={handleStart}
                 className="w-full bg-white text-black py-2 px-4 text-sm sm:text-base rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
               >
-                Start
+              💗  Start Chatting With Elara💗
               </button>
             )}
             {error && <p className="mt-4 text-red-500 text-sm">{error}</p>}
