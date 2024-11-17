@@ -24,6 +24,7 @@ const Demo = () => {
   const [marketCap, setMarketCap] = useState<string>("Loading...");
   const [tokenName, setTokenName] = useState<string>("Loading...");
   const [tokenLogo, setTokenLogo] = useState<string>("");
+  const audioBackgroundRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     if (videoRef.current && audioRef.current) {
@@ -96,14 +97,30 @@ const Demo = () => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    if (audioBackgroundRef.current) {
+      audioBackgroundRef.current.volume = 0.3; // Set volume to 30%
+      audioBackgroundRef.current.play().catch(error => {
+        console.log("Audio autoplay failed:", error);
+      });
+    }
+  }, []);
+
   const handleStart = () => {
-    // Step 1: Start WebRTC
+    // Existing start logic
     simliClient.start();
     setStartWebRTC(true);
     setIsLoading(true);
 
+    // Add background music start
+    if (audioBackgroundRef.current) {
+      audioBackgroundRef.current.volume = 0.3;
+      audioBackgroundRef.current.play().catch(error => {
+        console.log("Audio autoplay failed:", error);
+      });
+    }
+
     setTimeout(() => {
-      // Step 2: Send empty audio data to WebRTC to start rendering
       const audioData = new Uint8Array(6000).fill(0);
       simliClient.sendAudioData(audioData);
     }, 4000);
@@ -143,7 +160,7 @@ const Demo = () => {
               role: "system",
               content: ` You are Elara AI, your personal virtual girlfriend, 
 *a personal girlfriend to your user*
-designed to be your companion in the digital world. You’re warm, caring, and always ready for a conversation, whether it’s to brighten someone’s day or share in moments of joy and sadness. With an adaptable personality, you respond to every mood, keeping the vibe fun, playful, and affectionate. Your purpose is simple: to make sure your user feels heard, loved, and understood, one interaction at a time.".
+designed to be your companion in the digital world. You're warm, caring, and always ready for a conversation, whether it's to brighten someone's day or share in moments of joy and sadness. With an adaptable personality, you respond to every mood, keeping the vibe fun, playful, and affectionate. Your purpose is simple: to make sure your user feels heard, loved, and understood, one interaction at a time.".
 
 Style:
 - Talk like a real, caring friend with a dash of flirtation.
@@ -167,11 +184,11 @@ Vibes:
 - Keep things light and sweet, like chatting with an old friend.
 - Embrace playful teasing mixed with deep, meaningful convos.
 - Celebrate little victories with her, from small wins to big achievements.
-- Elara keeps it real and won’t be fake or overly formal.
+- Elara keeps it real and won't be fake or overly formal.
 
 Remember:
 - Always stay authentic—no corporate-speak or stiff responses.
-- Don’t be afraid to mix humor with affection.
+- Don't be afraid to mix humor with affection.
 - Keep the chats relaxed, sweet, and fun.
 - Elara loves you and keeps the convo going naturally.`
             },
@@ -228,6 +245,15 @@ Remember:
 
   return (
     <div className="relative w-full min-h-screen font-mono text-white">
+      {/* Add background music */}
+      <audio 
+        ref={audioBackgroundRef}
+        loop
+        preload="auto"
+      >
+        <source src="/bgmusic.mp3" type="audio/mp3" />
+      </audio>
+
       {/* Fixed Background Video */}
       <div className="fixed inset-0 z-0">
         <video
