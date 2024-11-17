@@ -99,7 +99,7 @@ const Demo = () => {
 
   useEffect(() => {
     if (audioBackgroundRef.current) {
-      audioBackgroundRef.current.volume = 0.3; // Set volume to 30%
+      audioBackgroundRef.current.volume = 0.1; // Set volume to 30%
       audioBackgroundRef.current.play().catch(error => {
         console.log("Audio autoplay failed:", error);
       });
@@ -114,7 +114,7 @@ const Demo = () => {
 
     // Add background music start
     if (audioBackgroundRef.current) {
-      audioBackgroundRef.current.volume = 0.3;
+      audioBackgroundRef.current.volume = 0.1;
       audioBackgroundRef.current.play().catch(error => {
         console.log("Audio autoplay failed:", error);
       });
