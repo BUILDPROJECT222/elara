@@ -292,12 +292,21 @@ Remember:
           {/* Video Container */}
           <div className="backdrop-blur-sm bg-black/30 p-3 sm:p-6 rounded-lg">
             <div className="relative w-full aspect-video mb-4">
+              {!startWebRTC && (
+                <Image
+                  src="/logo.png"
+                  alt="Start conversation"
+                  fill
+                  className="object-cover rounded"
+                  priority
+                />
+              )}
               <video
                 ref={videoRef}
                 id="simli_video"
                 autoPlay
                 playsInline
-                className="w-full h-full object-cover rounded"
+                className={`w-full h-full object-cover rounded ${!startWebRTC ? 'hidden' : ''}`}
               ></video>
               <audio ref={audioRef} id="simli_audio" autoPlay></audio>
             </div>
