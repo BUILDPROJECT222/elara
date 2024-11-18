@@ -135,7 +135,7 @@ const Demo = () => {
       try {
         console.log('Fetching token price...');
         
-        const response = await axios.get('https://api.dexscreener.com/latest/dex/pairs/solana/', {
+        const response = await axios.get('https://api.dexscreener.com/latest/dex/pairs/solana/DstBnnauYjd1KCMzmR3n8sX2z844jGbiigFxq5kiKsdn', {
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
