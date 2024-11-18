@@ -2,7 +2,7 @@
 import React, { useState, useRef, use, useEffect } from "react";
 import axios from "axios";
 import { SimliClient } from "simli-client";
-import { FaXTwitter, FaGithub, FaRocket } from "react-icons/fa6";
+import { FaXTwitter, FaRocket } from "react-icons/fa6";
 import Image from 'next/image';
 
 const simli_faceid = "f2cbe1a2-4cf6-4643-949d-3d493ab27cc8";
@@ -25,6 +25,74 @@ const Demo = () => {
   const [tokenName, setTokenName] = useState<string>("Loading...");
   const [tokenLogo, setTokenLogo] = useState<string>("");
   const audioBackgroundRef = useRef<HTMLAudioElement>(null);
+  const [isMuted, setIsMuted] = useState(false);
+
+  const toggleMute = () => {
+    if (audioBackgroundRef.current) {
+      audioBackgroundRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
+
+  // Handle background music initialization and mobile events
+  useEffect(() => {
+    const audio = audioBackgroundRef.current;
+    if (!audio) return;
+
+    // Set initial volume
+    audio.volume = 0.03;
+
+    // Function to handle page visibility changes
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        audio.pause();
+      } else {
+        audio.play().catch(error => {
+          console.log("Audio resume failed:", error);
+        });
+      }
+    };
+
+    // Function to handle mobile events
+    const handleMobileInteraction = () => {
+      if (audio.paused) {
+        audio.play().catch(error => {
+          console.log("Audio play failed:", error);
+        });
+      }
+    };
+
+    // Function to handle focus/blur events
+    const handleFocusChange = (focused: boolean) => {
+      if (focused) {
+        audio.play().catch(error => {
+          console.log("Audio resume failed:", error);
+        });
+      } else {
+        audio.pause();
+      }
+    };
+
+    // Add event listeners
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener('touchstart', handleMobileInteraction, { once: true });
+    window.addEventListener('focus', () => handleFocusChange(true));
+    window.addEventListener('blur', () => handleFocusChange(false));
+
+    // Initial play attempt
+    audio.play().catch(error => {
+      console.log("Initial audio play failed:", error);
+    });
+
+    // Cleanup
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', () => handleFocusChange(true));
+      window.removeEventListener('blur', () => handleFocusChange(false));
+      audio.pause();
+      audio.currentTime = 0;
+    };
+  }, []);
 
   useEffect(() => {
     if (videoRef.current && audioRef.current) {
@@ -97,26 +165,17 @@ const Demo = () => {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    if (audioBackgroundRef.current) {
-      audioBackgroundRef.current.volume = 0.1; // Set volume to 30%
-      audioBackgroundRef.current.play().catch(error => {
-        console.log("Audio autoplay failed:", error);
-      });
-    }
-  }, []);
-
   const handleStart = () => {
     // Existing start logic
     simliClient.start();
     setStartWebRTC(true);
     setIsLoading(true);
 
-    // Add background music start
+    // Try to resume background music on user interaction
     if (audioBackgroundRef.current) {
-      audioBackgroundRef.current.volume = 0.1;
+      audioBackgroundRef.current.volume = 0.03;
       audioBackgroundRef.current.play().catch(error => {
-        console.log("Audio autoplay failed:", error);
+        console.log("Audio play failed on start:", error);
       });
     }
 
@@ -245,11 +304,22 @@ Remember:
 
   return (
     <div className="relative w-full min-h-screen font-mono text-white">
-      {/* Add background music */}
+      {/* Add mute toggle button for mobile */}
+      <button
+        onClick={toggleMute}
+        className="fixed top-4 right-4 z-20 p-2 bg-black/50 rounded-full"
+        aria-label={isMuted ? "Unmute" : "Mute"}
+      >
+        {isMuted ? "🔇" : "🔊"}
+      </button>
+
+      {/* Background music with mobile-friendly attributes */}
       <audio 
         ref={audioBackgroundRef}
         loop
         preload="auto"
+        playsInline
+        muted={isMuted}
       >
         <source src="/bgmusic.mp3" type="audio/mp3" />
       </audio>
@@ -385,15 +455,6 @@ Remember:
             >
               <FaXTwitter className="text-lg sm:text-xl" />
               <span>X</span>
-            </a>
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-[#333] rounded-full hover:opacity-80 transition-opacity text-sm sm:text-base"
-            >
-              <FaGithub className="text-lg sm:text-xl" />
-              <span>GitHub</span>
             </a>
             <a
               href="https://pump.fun/coin/coming-soon"
