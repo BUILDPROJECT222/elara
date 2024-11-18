@@ -153,9 +153,9 @@ const Demo = () => {
         }
       } catch (error: any) {
         console.error('Error fetching token price:', error);
-        setTokenName('Error loading name');
-        setTokenPrice('Error loading price');
-        setMarketCap('Error loading market cap');
+        setTokenName('Elara');
+        setTokenPrice('price');
+        setMarketCap('market cap');
       }
     };
 
